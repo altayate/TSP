@@ -12,6 +12,10 @@ bays29_coords = [
     (490, 2130), (1460, 1420), (1260, 1910), (360, 1980)
 ]
 
+start_time = time.time()
+elapsed_time = 0
+times = []
+
 def compute_distance(city1, city2):
     x1, y1 = city1
     x2, y2 = city2
@@ -36,14 +40,14 @@ best = 0
 iteration = 0
 best_tour = []
 total_time = 0
-found_optimal = 0
 total_objective_value = 0
+found_optimal = 0
 
 num_iterations = 10000
 time_limit = 10.0
 
 for i in range(num_iterations):
-    start_time = time.time()
+    current_time = time.time()
     start_city = i % len(bays29_coords)
     tsp_tour = nearest_neighbor_tsp(bays29_coords, start_city)
     end_time = time.time()
@@ -54,10 +58,14 @@ for i in range(num_iterations):
     total_objective_value += total_distance
 
     if total_distance < best or best == 0:
+        elapsed_time = current_time - start_time
+        times.append(elapsed_time)
         best = total_distance
         iteration = i
         best_tour = tsp_tour
         found_optimal += 1
+        print("New optimal time found: ", elapsed_time, " Current tour distance: ", best)
+
 
 average_runtime = total_time / num_iterations
 success_rate = found_optimal / num_iterations

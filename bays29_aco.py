@@ -2,6 +2,7 @@ import numpy as np
 import random
 import math
 import matplotlib.pyplot as plt
+import time
 
 bays29_coords = [
     (1150, 1760), (630, 1660), (40, 2090), (750, 1100), (750, 2030),
@@ -11,6 +12,10 @@ bays29_coords = [
     (830, 1770), (490, 500), (1840, 1240), (1260, 1500), (1280, 790),
     (490, 2130), (1460, 1420), (1260, 1910), (360, 1980)
 ]
+
+start_time = time.time()
+elapsed_time = 0
+times = []
 def compute_distance(city1, city2):
     x1, y1 = city1
     x2, y2 = city2
@@ -21,6 +26,8 @@ for i in range(num_cities):
     for j in range(i + 1, num_cities):
         distance_matrix[i, j] = distance_matrix[j, i] = compute_distance(bays29_coords[i], bays29_coords[j])
 
+def Average(lst):
+    return sum(lst) / len(lst)
 #ACO parameters
 num_ants = 50
 num_iterations = 1000
@@ -38,6 +45,7 @@ for iteration in range(num_iterations):
     ant_tours = []
 
     for ant in range(num_ants):
+        current_time = time.time()
         current_city = random.randint(0, num_cities - 1)
         unvisited_cities = set(range(num_cities))
         unvisited_cities.remove(current_city)
@@ -57,8 +65,12 @@ for iteration in range(num_iterations):
 
         # Update the best tour if a shorter distance is found
         if total_distance < best_distance:
+            elapsed_time = current_time - start_time
+            times.append(elapsed_time)
             best_tour = tour
             best_distance = total_distance
+            print("New optimal time found: ", elapsed_time, " Current tour distance: ", best_distance)
+
 
         ant_tours.append((tour, total_distance))
 
@@ -68,8 +80,9 @@ for iteration in range(num_iterations):
         for i in range(len(tour) - 1):
             pheromone_matrix[tour[i], tour[i + 1]] += pheromone_constant / distance
 
-print("Best TSP Tour:", best_tour)
-print("Total Distance:", best_distance)
+print("Best TSP Tour: ", best_tour)
+print("Total Distance: ", best_distance)
+print("Average runtime: ", Average(times))
 ordered_coords = [bays29_coords[i] for i in best_tour]
 
 x = [coord[0] for coord in ordered_coords]
